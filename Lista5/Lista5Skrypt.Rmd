@@ -1,0 +1,53 @@
+---
+title: "Lista5MNumeryczne"
+output: html_document
+date: "2025-04-05"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r WŁASNA_METODA_GAUSSA}
+#WIĘC OGŁNIE DEFINIUJĘ PODAWANY UKŁAD RÓWNAŃ , JAKO MACIERZ KWADRATOWĄ, GDYBY NEI BYŁA WKADRATOWA TO Z CEPPLERA NIE JEST ROZWIĄZYWALNY TEN UKŁAD
+#NA WEJŚCIU PODAJĘ MACIERZ KxK (ukłąd równań) oprócz tego macierz rozwiązań
+
+matrix <- cbind(rbind(c(1,1,1),c(2,2,3),c(-1,4,1)),c(6,15,10))
+matrix1 <- matrix
+
+row_differencer <- function(row, ROW, i) {
+  new_row <- row - (row[i] / ROW[i]) * ROW
+  return(new_row)
+}
+#NAPRAWIAM ZERA NA DIAGONALI
+for(i in 1:(nrow(matrix1)-1)) {
+  if(matrix1[i,i] == 0) {
+    for(j in (i+1):nrow(matrix1)) {
+      if(matrix1[j,i] != 0) {
+        matrix1[c(i,j), ] <- matrix1[c(j,i), ]
+        break
+      }
+    }
+  }
+  
+  for(j in (i+1):nrow(matrix1)) {
+    matrix1[j,] <- row_differencer(matrix1[j,], matrix1[i,], i)
+  }
+}
+
+#NAPRAWIAM WIERSZE
+for(i in nrow(matrix1):2) 
+  {
+
+  matrix1[i,] <- matrix1[i,] / matrix1[i,i]
+  
+  for(j in 1:(i-1)) 
+  {
+    matrix1[j,] <- row_differencer(matrix1[j,], matrix1[i,], i)
+  }
+}
+
+matrix1
+
+```
