@@ -8,13 +8,14 @@ date: "2025-04-05"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
 ```{r WŁASNA_METODA_GAUSSA}
 #WIĘC OGŁNIE DEFINIUJĘ PODAWANY UKŁAD RÓWNAŃ , JAKO MACIERZ KWADRATOWĄ, GDYBY NEI BYŁA WKADRATOWA TO Z CEPPLERA NIE JEST ROZWIĄZYWALNY TEN UKŁAD
 #NA WEJŚCIU PODAJĘ MACIERZ KxK (ukłąd równań) oprócz tego macierz rozwiązań
 
-matrix <- cbind(rbind(c(1,1,1),c(2,2,3),c(-1,4,1)),c(6,15,10))
-matrix1 <- matrix
+
+
+gauss <- function(MATRIX){
+matrix1 <- MATRIX
 
 row_differencer <- function(row, ROW, i) {
   new_row <- row - (row[i] / ROW[i]) * ROW
@@ -47,7 +48,106 @@ for(i in nrow(matrix1):2)
     matrix1[j,] <- row_differencer(matrix1[j,], matrix1[i,], i)
   }
 }
+matrix1[1,] <- matrix1[1,]/matrix1[1,1]
+  return (matrix1)
+}
 
-matrix1
+
+
+```
+
+```{r MetodaIteracyjna}
+
+#DEFINICJA RÓWNANIA (MACIERZY NA POTRZEBY ZADANIA UZNAJE,ŻE MACIERZ JEST KWADRATOWA)
+
+
+metoda_iteracyjna <- function(our_matrix,n,b){
+sol_n <- rep(0,nrow(our_matrix))
+sol_n1 <- rep(0,nrow(our_matrix))
+under_diag <- our_matrix
+over_diag <- our_matrix
+diagonal <- diag(diag(our_matrix))
+
+  for(i in 1:ncol(our_matrix)){
+    for(j in i :nrow(our_matrix)){
+      under_diag[i,j]=0;
+    }
+  }
+
+counter_diag <- diagonal
+
+for(i in 1:nrow(diagonal))
+{
+  counter_diag[i,i] <- counter_diag[i,i]/(counter_diag[i,i]**2)
+}
+
+over_diag <- our_matrix - diagonal - under_diag
+
+L <- under_diag
+U <- over_diag
+M1 <- counter_diag %*% b
+M2 <- counter_diag %*% L
+M3 <- counter_diag %*% U
+
+
+for (k in 1:n)
+{
+  for (h in  1:nrow(our_matrix))
+  {
+    
+    sol_n1[h] <-  M1[h] - (M2%*%sol_n1)[h] - (M3%*%sol_n)[h] 
+  }
+  sol_n <- sol_n1
+}
+  
+  
+  return (sol_n)
+}
+
+matrixx1 <- rbind(c(4,-1,-0.2,2),c(-1,5,0,-2),c(0.2,1,10,-1),c(0,-2,-1,4))
+MATRIX <- cbind(rbind(c(1,1,1),c(2,2,3),c(-1,4,1)),c(6,15,10))
+matrix1 <- gauss(MATRIX)
+MATRIX1 <-rbind(c(1,1,1),c(2,2,3),c(-1,4,1))
+matrix2 <- metoda_iteracyjna(matrixx1,2,c(30,0,-10,5))
+matrix2
+
+
+
+```
+
+```{r Zadanie3}
+matrix1 <- rbind(c(200,2,3),c(3,400,3),c(1,1,100))
+b1 <- c(15.9,24.6,7.1)
+matrix11<-cbind(matrix1,b1)
+
+matrix2 <- rbind(c(34523423,2),c(1923845,4))
+b2 <- c(34823052332,432423523423)
+matrix21<-cbind(matrix2,b2)
+
+matrix3 <- rbind(c(34523423,5500,34324),c(1923845,40044,432523),c(83845,3344,4322323))
+b3 <- c(34823052332,432423523423,0.0000001)
+matrix31<-cbind(matrix3,b3)
+
+g1 <-gauss(matrix11)
+g2 <- gauss(matrix21)
+g3 <- gauss(matrix31)
+
+m1 <- metoda_iteracyjna(matrix1,100,b1)
+m2 <- metoda_iteracyjna(matrix2,100,b2)
+m3 <-metoda_iteracyjna(matrix3,100,b3)
+
+print(g1)
+print(g2)
+print(g3)
+
+print(m1)
+print(m2)
+print(m3)
+
+print(sqrt(sum((g1[,4]-m1)**2)))
+print(sqrt(sum((g2[,3]-m2)**2)))
+print(sqrt(sum((g3[,4]-m3)**2)))
+
+
 
 ```
